@@ -17,6 +17,12 @@
 
 Пользователь может оставить отзыв о магазине.
 
+## Интерфейс сайта
+![Главная страница] (https://github.com/rkashapov2015/florist-shop/blob/master/1_main.jpg "Главная страница")
+![При щелчке по кнопке Заказать] (https://github.com/rkashapov2015/florist-shop/blob/master/2_click_to_order.jpg "При щелчке по кнопке Заказать")
+![Второй шаг] (https://github.com/rkashapov2015/florist-shop/blob/master/3_enter_your_data.jpg "Второй шаг")
+![Чат] (https://github.com/rkashapov2015/florist-shop/blob/master/4_chat.jpg "Чат")
+
 ## Функционал сервера:
 -----------------------
 * **Получение данных**
