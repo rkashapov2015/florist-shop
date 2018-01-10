@@ -19,13 +19,13 @@
 
 ## Интерфейс сайта
 ### Главная страница
-![Главная страница] (https://github.com/rkashapov2015/florist-shop/blob/master/1_main.jpg?raw=true "Главная страница")
+![Главная страница](https://github.com/rkashapov2015/florist-shop/blob/master/1_main.jpg?raw=true "Главная страница")
 ### При щелчке по кнопке Заказать
-![При щелчке по кнопке Заказать] (https://github.com/rkashapov2015/florist-shop/blob/master/2_click_to_order.jpg?raw=true "При щелчке по кнопке Заказать")
+![При щелчке по кнопке Заказать](https://github.com/rkashapov2015/florist-shop/blob/master/2_click_to_order.jpg?raw=true "При щелчке по кнопке Заказать")
 ### Второй шаг
-![Второй шаг] (https://github.com/rkashapov2015/florist-shop/blob/master/3_enter_your_data.jpg?raw=true "Второй шаг")
+![Второй шаг](https://github.com/rkashapov2015/florist-shop/blob/master/3_enter_your_data.jpg?raw=true "Второй шаг")
 ### Чат
-![Чат] (https://github.com/rkashapov2015/florist-shop/blob/master/4_chat.jpg?raw=true "Чат")
+![Чат](https://github.com/rkashapov2015/florist-shop/blob/master/4_chat.jpg?raw=true "Чат")
 
 ## Функционал сервера:
 -----------------------
