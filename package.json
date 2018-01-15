@@ -1,0 +1,40 @@
+{
+  "name": "florist-shop",
+  "version": "1.0.0",
+  "description": "florist shop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "lite-server -c=config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rkashapov2015/florist-shop.git"
+  },
+  "author": "Rinat Kashapov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rkashapov2015/florist-shop/issues"
+  },
+  "homepage": "https://github.com/rkashapov2015/florist-shop#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-cache": "^1.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^3.9.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-minify": "^2.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-scss": "^1.4.0",
+    "gulp-size": "^3.0.0",
+    "jshint": "^2.9.5",
+    "lite-server": "^2.3.0"
+  },
+  "dependencies": {
+    "skeleton-css": "^2.0.4"
+  }
+}
