@@ -7,7 +7,8 @@ var products = [
     {id: 4, name: "Вариант 4", "price": 1200, description: "dddddd"},
     {id: 5, name: "Вариант 5", "price": 4200, description: "dddddd"},
     {id: 6, name: "Вариант 6", "price": 3200, description: "dddddd"},
-    {id: 7, name: "Вариант 7", "price": 5200, description: "dddddd"}
+    {id: 7, name: "Вариант 7", "price": 5200, description: "dddddd"},
+    {id: 8, name: "Вариант 7", "price": 5200, description: "dddddd"}
 ];
 
 init();
@@ -113,17 +114,67 @@ function resize(event) {
     if (footer) {
         allHeight += footer.offsetHeight;
     }
-    console.log(bodyHeight, allHeight);
+    //console.log(bodyHeight, allHeight);
     if (bodyHeight > allHeight) {
         contentBlock.style = 'margin-bottom: ' + (bodyHeight-allHeight) + 'px';
     }
     
 }
 
+function clickForBuy(event) {
+    if (event.target.dataset.action === 'order') {
+        event.preventDefault();
+        var parent = getParentByClassName(event.target, 'flower-product');
+
+        console.log(parent.dataset.id);
+        toggleModal();
+    }
+}
+
+function isHidden(el) {
+    var style = window.getComputedStyle(el);
+    return (style.display === 'none')
+}
+
+function toggleModal() {
+    var modalWrapper = document.querySelector('.modal-wrapper');
+    if (!modalWrapper) {
+        return false;
+    }
+    if (isHidden(modalWrapper)) {
+        modalWrapper.style = "display: block;";
+    } else {
+        modalWrapper.style = '';
+    }
+    
+    
+}
+
+function getParentByClassName(node, className) {
+    var curNode = node;
+    while(curNode.parentNode) {
+        var parentNode = curNode.parentNode;
+        if (parentNode.classList.contains(className)) {
+            return parentNode;
+        }
+        curNode = parentNode;
+    }
+}
+
+
 function init() {
     clearNode(productsList);
     drawProducts();
     document.addEventListener('DOMContentLoaded', resize);
 	window.addEventListener('resize', resize);
-	
+    productsList.addEventListener('click', clickForBuy);
+    document.body.addEventListener('click', function (event) {
+        if (
+            event.target.classList.contains('modal-wrapper') ||
+            event.target.classList.contains('modal-window-dialog-close')
+        ) {
+            event.preventDefault();
+            toggleModal();
+        }
+    });
 }
