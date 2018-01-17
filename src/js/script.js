@@ -136,8 +136,15 @@ function drawModalStepOne(product_id) {
     modalBody.appendChild(divRow);
 
     var divRow2 = createEl('div', 'row');
-
+    
     modalBody.appendChild(divRow2);
+
+    var divRow3 = createEl('div', 'row text-right');
+    var buttonNext = createEl('button', 'button-pay');
+    buttonNext.innerText = 'Далее';
+    divRow3.appendChild(buttonNext);
+    
+    modalBody.appendChild(divRow3);
 }
 
 function resize(event) {
