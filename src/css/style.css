@@ -1,0 +1,186 @@
+@charset "UTF-8";
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: #315a14; }
+
+.button-buy, .button-pay {
+  display: inline-block;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 5px;
+  background-color: #c7de66;
+  color: #2c4126;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-bottom: 0;
+  border: 1px solid #6c912b;
+  text-decoration: none;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 14px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .button-buy:hover, .button-pay:hover {
+    background-color: #6c912b;
+    color: #2c4126;
+    text-decoration: none; }
+  .button-buy:focus, .button-buy:active, .button-pay:focus, .button-pay:active {
+    text-decoration: none;
+    color: #2c4126; }
+
+.position-right-bottom {
+  position: absolute;
+  right: 5px;
+  bottom: 12px; }
+
+.products-block {
+  padding-top: 20px; }
+  .products-block > .row {
+    margin-bottom: 4%; }
+
+.logo {
+  text-shadow: 1px 1px 5px #6c912b; }
+
+.text-right {
+  text-align: right; }
+
+.wrapper {
+  height: 100%;
+  min-height: 100%; }
+
+header.header {
+  background-color: #c7de66;
+  color: #315a14;
+  border-bottom: 4px solid #2c4126;
+  padding: 10px; }
+
+footer.footer {
+  background-color: #1b251a;
+  min-height: 150px;
+  border-top: 4px solid #2c4126;
+  color: #c7de66;
+  padding-top: 15px; }
+
+.flower-product-wrapper {
+  min-height: 200px; }
+  .flower-product-wrapper > .flower-product {
+    width: 100%;
+    height: 219px;
+    position: relative;
+    border: 1px solid #315a14;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s; }
+    .flower-product-wrapper > .flower-product:hover {
+      box-shadow: 0 0 5px #1b251a; }
+    .flower-product-wrapper > .flower-product > .flower-product-image {
+      min-height: 200px;
+      overflow: hidden;
+      position: relative; }
+      .flower-product-wrapper > .flower-product > .flower-product-image img {
+        width: 100%;
+        height: 218px;
+        object-fit: cover; }
+      .flower-product-wrapper > .flower-product > .flower-product-image .flower-product-descr {
+        position: absolute;
+        padding: 0 10px;
+        bottom: 0;
+        width: 100%;
+        height: 70px;
+        color: #315a14;
+        background-color: rgba(255, 255, 255, 0.8); }
+
+.modal-wrapper {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); }
+  .modal-wrapper > .modal-window-dialog {
+    text-align: center;
+    vertical-align: middle;
+    width: 400px;
+    background-color: #315a14;
+    border: 1px solid #6c912b;
+    border-radius: 4px;
+    z-index: 10;
+    min-height: 500px;
+    margin: 0px auto 0 auto;
+    text-align: left;
+    position: relative;
+    -webkit-animation-name: example;
+    /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 0.3s;
+    /* Safari 4.0 - 8.0 */
+    animation-name: example;
+    animation-duration: 0.3s;
+    top: 10%;
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    box-shadow: 2px 2px 10px #000;
+    background-color: #315a14; }
+    .modal-wrapper > .modal-window-dialog > .modal-window-dialog-head {
+      width: 100%;
+      height: 45px;
+      background-color: #c7de66; }
+      .modal-wrapper > .modal-window-dialog > .modal-window-dialog-head > .modal-window-dialog-close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 14px;
+        cursor: pointer; }
+        .modal-wrapper > .modal-window-dialog > .modal-window-dialog-head > .modal-window-dialog-close:before {
+          width: 40px;
+          height: 40px;
+          color: #315a14;
+          content: "Закрыть"; }
+        .modal-wrapper > .modal-window-dialog > .modal-window-dialog-head > .modal-window-dialog-close:hover:before {
+          color: #fff; }
+    .modal-wrapper > .modal-window-dialog > .modal-window-dialog-body {
+      border-top: 1px solid #2c4126;
+      padding: 15px;
+      width: 100%;
+      height: 455px;
+      color: #fff; }
+      .modal-wrapper > .modal-window-dialog > .modal-window-dialog-body .modal-image-block {
+        overflow: hidden; }
+        .modal-wrapper > .modal-window-dialog > .modal-window-dialog-body .modal-image-block img {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 4px; }
+
+@-webkit-keyframes example {
+  0% {
+    top: 100%;
+    transform: scale(2.5); }
+  100% {
+    top: 10%;
+    transform: scale(1); } }
+
+/* Standard syntax */
+@keyframes example {
+  0% {
+    top: 100%;
+    transform: scale(2.5); }
+  100% {
+    top: 10%;
+    transform: scale(1); } }

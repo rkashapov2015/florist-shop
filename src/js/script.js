@@ -1,14 +1,15 @@
 var productsList = document.getElementById('productsList');
+var modalBody = document.querySelector('.modal-window-dialog-body');
 
 var products = [
-    {id: 1, name: "Вариант 1", "price": 2300, description: "dddddd"},
-    {id: 2, name: "Вариант 2", "price": 2500, description: "dddddd"},
-    {id: 3, name: "Вариант 3", "price": 1500, description: "dddddd"},
-    {id: 4, name: "Вариант 4", "price": 1200, description: "dddddd"},
-    {id: 5, name: "Вариант 5", "price": 4200, description: "dddddd"},
-    {id: 6, name: "Вариант 6", "price": 3200, description: "dddddd"},
-    {id: 7, name: "Вариант 7", "price": 5200, description: "dddddd"},
-    {id: 8, name: "Вариант 7", "price": 5200, description: "dddddd"}
+    {id: 1, name: "Вариант 1", "price": 2300, description: "dddddd", 'image': 'img/1.jpg'},
+    {id: 3, name: "Вариант 3", "price": 1500, description: "dddddd", 'image': 'img/2.jpg'},
+    {id: 2, name: "Вариант 2", "price": 2500, description: "dddddd", 'image': 'img/3.jpg'},
+    {id: 4, name: "Длинное название", "price": 1200, description: "Очень большой букет, очень длинный текст. Про цветы.", 'image': 'img/4.jpg'},
+    {id: 5, name: "Очень длинное название", "price": 4200, description: "dddddd", 'image': 'img/5.jpg'},
+    {id: 6, name: "Вариант 6", "price": 3200, description: "dddddd", 'image': 'img/6.jpg'},
+    {id: 7, name: "Вариант 7", "price": 5200, description: "dddddd", 'image': 'img/7.jpg'},
+    {id: 8, name: "Вариант 8", "price": 1234, description: "dddddd", 'image': 'img/1.jpg'}
 ];
 
 init();
@@ -98,6 +99,47 @@ function drawProducts() {
 
 }
 
+function getProductById(id) {
+    for (var product of products) {
+        console.log(id + ' === ' + product.id);
+        if (id === product.id) {
+            return product;
+        }
+    }
+    return null;
+}
+
+function drawModalStepOne(product_id) {
+    clearNode(modalBody);
+    var product = getProductById(product_id);
+
+    if (!product) {
+        console.log('product ' + product_id + ' not found');
+        return false;
+    }
+
+    var divRow = createEl('div', 'row');
+    var divImage = createEl('div', "six columns modal-image-block");
+    var img = createEl('img');
+    img.src = product.image;
+    divImage.appendChild(img);
+    var divDescrPrice = createEl('div', 'six columns modal-descr-block');
+    var priceP = createEl('p');
+    priceP.innerText = product.price + 'руб.';
+
+    var descrP = createEl('p');
+    descrP.innerText = product.description;
+    divDescrPrice.appendChild(priceP);
+    divDescrPrice.appendChild(descrP);
+    divRow.appendChild(divImage);
+    divRow.appendChild(divDescrPrice);
+    modalBody.appendChild(divRow);
+
+    var divRow2 = createEl('div', 'row');
+
+    modalBody.appendChild(divRow2);
+}
+
 function resize(event) {
     var body = document.querySelector('body');
     var bodyHeight = body.offsetHeight;
@@ -127,6 +169,7 @@ function clickForBuy(event) {
         var parent = getParentByClassName(event.target, 'flower-product');
 
         console.log(parent.dataset.id);
+        drawModalStepOne(parseInt(parent.dataset.id));
         toggleModal();
     }
 }
