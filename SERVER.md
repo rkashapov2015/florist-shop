@@ -1,16 +1,26 @@
 # Функционал сервера
 
 ## WebSocket
+
 Вебсокет для чата. При подключении нужно приветствие 'Здравствуйте, чем могу Вам помочь?' и через 30 секунд соединение теряется.
 
 ## XMLHttpRequest
+
 ### Получение данных
+
 *запрос:*
+
 урл: `/get-data`
+
 метод: **GET**
+
 *ответ:*
-    формат: **JSON**
-    тело:  `{
+
+формат: **JSON**
+
+тело:  
+~~~
+{
         'product': [
             {id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
             {id: 3, name: "Море роз", "price": 1500, description: "Описание 2", 'image': 'img/2.jpg', 'type': 'flower'},
@@ -24,22 +34,40 @@
             {id: 202, name: "Конфеты", "price": 300, description: "Конфеты Raffaelo", 'type': 'additional'},
             {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}
         ]
-    }`
+}
+~~~
+
 ### Создание заказа
+
 *Отправка заказа на сервер*
+
 урл: `/create-order`
-тело: `{
+
+тело: 
+~~~
+{
         delivery: {name: xxxx, phone: xxxxxxxx, date: xxxxxx, address: xxxxxx },
         products: [id,id,id,id]
-    }
-    `
+}
+~~~
+
 метод: **POST**
+
 *ответ:* `{type: 'order', success: true/false}`
+
 ### Отправка отзыва
+
 урл: `/send-review`
+
 метод: **POST**
-тело: `{
+
+тело: 
+
+~~~
+{
     name: 'Jonh Doe',
     text: '...'
-}`
+}
+~~~
+
 *ответ:* `{type: 'review', success: true/false}`
