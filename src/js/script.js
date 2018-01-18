@@ -2,14 +2,17 @@ var productsList = document.getElementById('productsList');
 var modalBody = document.querySelector('.modal-window-dialog-body');
 
 var products = [
-    {id: 1, name: "Вариант 1", "price": 2300, description: "dddddd", 'image': 'img/1.jpg'},
-    {id: 3, name: "Вариант 3", "price": 1500, description: "dddddd", 'image': 'img/2.jpg'},
-    {id: 2, name: "Вариант 2", "price": 2500, description: "dddddd", 'image': 'img/3.jpg'},
-    {id: 4, name: "Длинное название", "price": 1200, description: "Очень большой букет, очень длинный текст. Про цветы.", 'image': 'img/4.jpg'},
-    {id: 5, name: "Очень длинное название", "price": 4200, description: "dddddd", 'image': 'img/5.jpg'},
-    {id: 6, name: "Вариант 6", "price": 3200, description: "dddddd", 'image': 'img/6.jpg'},
-    {id: 7, name: "Вариант 7", "price": 5200, description: "dddddd", 'image': 'img/7.jpg'},
-    {id: 8, name: "Вариант 8", "price": 1234, description: "dddddd", 'image': 'img/1.jpg'}
+    {id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
+    {id: 3, name: "Море роз", "price": 1500, description: "Описание 2", 'image': 'img/2.jpg', 'type': 'flower'},
+    {id: 2, name: "Букет роз", "price": 2500, description: "Описание 3", 'image': 'img/3.jpg', 'type': 'flower'},
+    {id: 4, name: "Букет нежный", "price": 1200, description: "Очень большой букет, очень длинный текст. Про цветы.", 'image': 'img/4.jpg', 'type': 'flower'},
+    {id: 5, name: "Букет мечта", "price": 4200, description: "Описание 4", 'image': 'img/5.jpg', 'type': 'flower'},
+    {id: 6, name: "Букет Восторг", "price": 3200, description: "Описание 5", 'image': 'img/6.jpg', 'type': 'flower'},
+    {id: 7, name: "Пиалы", "price": 5200, description: "Описание 6", 'image': 'img/7.jpg', 'type': 'flower'},
+    {id: 8, name: "Синие розы", "price": 1234, description: "Описание 7", 'image': 'img/image.jpg', 'type': 'flower'},
+    {id: 201, name: "Ленточка", "price": 200, description: "Красная лента", 'type': 'additional'},
+    {id: 202, name: "Конфеты", "price": 300, description: "Конфеты Raffaelo", 'type': 'additional'},
+    {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}
 ];
 
 init();
@@ -86,6 +89,9 @@ function drawProducts() {
     var row = createEl('div', 'row');
     var i = 0;
     products.forEach(function(value, index) {
+        if (value.type != 'flower') {
+            return false;
+        }
         var product = createProduct(value);
         row.appendChild(product);
         i++;
