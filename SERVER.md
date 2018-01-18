@@ -25,6 +25,7 @@
         ]
     }`
 * **Создание заказа**
+*Отправка заказа на сервер*
 урл: `/create-order`
 тело: `{
         delivery: {name: xxxx, phone: xxxxxxxx, date: xxxxxx, address: xxxxxx },
