@@ -1,8 +1,15 @@
 var productsList = document.getElementById('productsList');
 var modalBody = document.querySelector('.modal-window-dialog-body');
 
+var urlGetProducts = 'https://neto-api.herokuapp.com/florist-shop';
+var urlOrder = 'https://neto-api.herokuapp.com/florist-shop/order';
+var urlReview = 'https://neto-api.herokuapp.com/florist-shop/review';
+var urlWebSocket = 'wss://neto-api.herokuapp.com/florist-shop/support';
+
+var orderData = {};
+
 var products = [
-    {id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
+    /*{id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
     {id: 3, name: "Море роз", "price": 1500, description: "Описание 2", 'image': 'img/2.jpg', 'type': 'flower'},
     {id: 2, name: "Букет роз", "price": 2500, description: "Описание 3", 'image': 'img/3.jpg', 'type': 'flower'},
     {id: 4, name: "Букет нежный", "price": 1200, description: "Очень большой букет, очень длинный текст. Про цветы.", 'image': 'img/4.jpg', 'type': 'flower'},
@@ -12,11 +19,10 @@ var products = [
     {id: 8, name: "Синие розы", "price": 1234, description: "Описание 7", 'image': 'img/image.jpg', 'type': 'flower'},
     {id: 201, name: "Ленточка", "price": 200, description: "Красная лента", 'type': 'additional'},
     {id: 202, name: "Конфеты", "price": 300, description: "Конфеты Raffaelo", 'type': 'additional'},
-    {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}
+    {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}*/
 ];
 
 init();
-
 
 function createEl(type, className, id) {
     var element = document.createElement(type);
@@ -102,7 +108,6 @@ function drawProducts() {
             row = createEl('div', 'row');
         }
     });
-
 }
 
 function getProductById(id) {
@@ -140,16 +145,64 @@ function drawModalStepOne(product_id) {
     divRow.appendChild(divImage);
     divRow.appendChild(divDescrPrice);
     modalBody.appendChild(divRow);
-
+    var hiddenInput = createInput('flower', null, 'productId', 'hidden');
+    hiddenInput.value = product_id;
     var divRow2 = createEl('div', 'row');
+    divRow2.appendChild(hiddenInput);
+    var p = createEl('p');
+    p.innerText = 'Дополнительные товары';
+    divRow2.appendChild(p);
+    products.forEach(function(value, index) {
+        if (value.type != 'additional') {
+            return false;
+        }
+        var additional = createCheckbox(value.name, 'additional_' + value.id);
+        divRow2.appendChild(additional);
+    });
     
     modalBody.appendChild(divRow2);
 
     var divRow3 = createEl('div', 'row text-right');
     var buttonNext = createEl('button', 'button-pay');
     buttonNext.innerText = 'Далее';
-    divRow3.appendChild(buttonNext);
+
+    buttonNext.addEventListener('click', function(event) {
+        var inputs = modalBody.querySelectorAll('input');
+        console.log(inputs);
+        orderData = {};
+        Array.from(inputs).forEach( function(value) {
+            //if (value.value) {
+                //console.log(value.name, value.value);
+                if ((value.type === 'checkbox' || value.type === 'radio')) {
+                    if (value.checked) {
+                        orderData[value.name] = value.value;
+                    }
+                    
+                } else {
+                    orderData[value.name] = value.value;
+                }
+                
+            //}
+        });
+        console.log(orderData);
+    });
     
+    divRow3.appendChild(buttonNext);
+    modalBody.appendChild(divRow3);
+}
+
+function drawModalStepTwo(product_id) {
+    clearNode(modalBody);
+    var inputName = createInput('userName', 'u-full-width', null, 'text');
+    modalBody.appendChild(createField('Ваше имя', inputName));
+    var inputPhone = createInput('phone', 'u-full-width', null, 'text');
+    modalBody.appendChild(createField('Телефон', inputPhone));
+    var inputDate = createInput('date', 'u-full-width', null, 'text');
+    modalBody.appendChild(createField('Адрес', inputDate));
+    var buttonPay = createEl('button', 'button-pay');
+    buttonPay.innerText = 'Оформить заказ';
+    var divRow3 = createEl('div', 'row text-right');
+    divRow3.appendChild(buttonPay);
     modalBody.appendChild(divRow3);
 }
 
@@ -169,11 +222,42 @@ function resize(event) {
     if (footer) {
         allHeight += footer.offsetHeight;
     }
-    //console.log(bodyHeight, allHeight);
+    
     if (bodyHeight > allHeight) {
         contentBlock.style = 'margin-bottom: ' + (bodyHeight-allHeight) + 'px';
     }
+}
+
+function createCheckbox(labelText, name) {
     
+    var label = createEl('label');
+    var input = createInput(name, null, null, 'checkbox');
+    input.value = name;
+    label.appendChild(input);
+    var span = createEl('span', 'label-body');
+    span.innerText = labelText;
+    label.appendChild(span);
+    return label;
+}
+
+function createInput(name, className, id, inputType) {
+    var input = createEl('input', className, id);
+    if (inputType) {
+        input.setAttribute('type', inputType);
+    }
+    if (name) {
+        input.setAttribute('name', name);
+    }
+    return input;
+}
+
+function createField(labelText, node) {
+    var fragment = document.createDocumentFragment();
+    var label = createEl('label');
+    label.innerText = labelText;
+    fragment.appendChild(label);
+    fragment.appendChild(node);
+    return fragment;
 }
 
 function clickForBuy(event) {
@@ -202,8 +286,6 @@ function toggleModal() {
     } else {
         modalWrapper.style = '';
     }
-    
-    
 }
 
 function getParentByClassName(node, className) {
@@ -217,11 +299,106 @@ function getParentByClassName(node, className) {
     }
 }
 
+const webSocketObject = {
+    connection: null,
+    tryConnect: 0,
+    _intervalTimeout: 5000,
+    _clientClose: false,
+    connect: () => {
+      webSocketObject.connection = new WebSocket(urlWebSocket);
+      webSocketObject.connection.addEventListener('open', webSocketObject.onOpen);
+      webSocketObject.connection.addEventListener('message', webSocketObject.onMessage);
+      webSocketObject.connection.addEventListener('error', webSocketObject.onError);
+      webSocketObject.connection.addEventListener('close', webSocketObject.onClose);
+    },
+    onOpen: (event) => {
+      webSocketObject.tryConnect = 0;
+      webSocketObject._intervalTimeout = 5000;
+      console.log('Соединение установлено...');
+      let params = {
+        c: 'connect',
+        d: '',
+        u: {id: hash}
+      };
+      webSocketObject.send(JSON.stringify(params));
+    },
+    onMessage: (event) => {
+      readInstruction(event.data);
+    },
+    onError: (event) => {
+      console.log(`Произошла ошибка: ${error.data}`);
+      webSocketObject.tryConnect++;
+      webSocketObject._intervalTimeout = 10000;
+      setTimeout(webSocketObject.connect, webSocketObject._intervalTimeout);
+    },
+    onClose: (event) => {
+      if (webSocketObject._clientClose) {
+        return false;
+      }
+      if (event.wasClean) {
+        console.log('Соединение закрыто корректно');
+      } else {
+        console.log(event.code);
+      }
+      webSocketObject.tryConnect++;
+      if (webSocketObject.tryConnect > 5) {
+        webSocketObject._intervalTimeout = 10000;
+      }
+      if (webSocketObject.tryConnect > 10) {
+        webSocketObject._intervalTimeout = 20000;
+      }
+      console.log('Попытка соединения...' + webSocketObject.tryConnect);
+      setTimeout(webSocketObject.connect, webSocketObject._intervalTimeout);
+    },
+    send: (data) => {
+      if (!webSocketObject.connection) {
+        return false;
+      }
+      webSocketObject.connection.send(data);
+      return true;
+    },
+    close: () => {
+      if (webSocketObject.connection) {
+        clearAll();
+        webSocketObject._clientClose = true;
+        webSocketObject.connection.close();
+      }
+    }
+}
+
+function sendData(url, data) {
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', (e) => {
+      console.log(xhr.response);
+      readInstruction(xhr.response);
+    });
+    let method = "POST";
+    if (!data) {
+      method = "GET";
+    }
+    xhr.open(method, url);
+    xhr.send(data);
+}
+function readInstruction(data) {
+    let object = getJsonData(data);
+    if (object.hasOwnProperty('product')) {
+        products = object.product;
+        drawProducts();
+    }
+}
+
+function getJsonData(data) {
+    try {
+      return JSON.parse(data);
+    } catch (error) {
+      return {};
+    }
+}
 
 function init() {
     clearNode(productsList);
-    drawProducts();
     document.addEventListener('DOMContentLoaded', resize);
+    sendData(urlGetProducts);
 	window.addEventListener('resize', resize);
     productsList.addEventListener('click', clickForBuy);
     document.body.addEventListener('click', function (event) {
