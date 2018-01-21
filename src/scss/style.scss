@@ -15,7 +15,12 @@ html, body  {
     width: 100%;
     background-color: $three_color;
 }
-.button-buy, .button-pay {
+
+canvas {
+    position: absolute;
+}
+
+.button-buy, .button-pay, .button-chat {
     display: inline-block;
     padding: 5px 10px;
     cursor: pointer;
@@ -49,7 +54,14 @@ html, body  {
         color: $four_color;
     }
 }
-
+.button-chat {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    transition: all 0.2s;
+    &:hover {
+        bottom: -3px;
+    }
+}
 .position-right-bottom {
     position: absolute;
     right: 5px;
@@ -69,6 +81,11 @@ html, body  {
 .text-right {
     text-align: right;
 }
+.bottom-right {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
 .wrapper {
     height: 100%;
     min-height: 100%;
@@ -86,6 +103,13 @@ footer.footer {
     color: $five_color;
     padding-top: 15px;
 }
+.button-chat-block {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+
 .flower-product-wrapper {
     min-height: 200px;
     & > .flower-product {
@@ -121,6 +145,39 @@ footer.footer {
             }
         }
     }
+}
+input:focus {
+    border-color: $five_color;
+}
+.chat-messages {
+    height: 350px;
+    //margin: 5px 5px 0 5px;
+    background-color: #fff;
+}
+.chat-block {
+    display: none;
+    position: fixed;
+    bottom: 50px;
+    right: 0;
+    width: 300px;
+    height: 400px;
+    background-color: $five_color;
+    border: 1px solid $one_color;
+}
+.chat-wrapper {
+    padding: 5px;
+}
+
+.message-block {
+    padding: 5px;
+    & > span {
+        padding-right: 5px;
+        font-weight: 700;
+    }
+}
+
+.show {
+    display: block;
 }
 
 .modal-wrapper {

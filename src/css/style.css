@@ -9,7 +9,10 @@ html, body {
   width: 100%;
   background-color: #315a14; }
 
-.button-buy, .button-pay {
+canvas {
+  position: absolute; }
+
+.button-buy, .button-pay, .button-chat {
   display: inline-block;
   padding: 5px 10px;
   cursor: pointer;
@@ -33,13 +36,20 @@ html, body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
-  .button-buy:hover, .button-pay:hover {
+  .button-buy:hover, .button-pay:hover, .button-chat:hover {
     background-color: #6c912b;
     color: #2c4126;
     text-decoration: none; }
-  .button-buy:focus, .button-buy:active, .button-pay:focus, .button-pay:active {
+  .button-buy:focus, .button-buy:active, .button-pay:focus, .button-pay:active, .button-chat:focus, .button-chat:active {
     text-decoration: none;
     color: #2c4126; }
+
+.button-chat {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: all 0.2s; }
+  .button-chat:hover {
+    bottom: -3px; }
 
 .position-right-bottom {
   position: absolute;
@@ -57,6 +67,11 @@ html, body {
 .text-right {
   text-align: right; }
 
+.bottom-right {
+  position: absolute;
+  bottom: 15px;
+  right: 15px; }
+
 .wrapper {
   height: 100%;
   min-height: 100%; }
@@ -73,6 +88,11 @@ footer.footer {
   border-top: 4px solid #2c4126;
   color: #c7de66;
   padding-top: 15px; }
+
+.button-chat-block {
+  position: fixed;
+  bottom: 0;
+  right: 0; }
 
 .flower-product-wrapper {
   min-height: 200px; }
@@ -103,6 +123,35 @@ footer.footer {
         height: 70px;
         color: #315a14;
         background-color: rgba(255, 255, 255, 0.8); }
+
+input:focus {
+  border-color: #c7de66; }
+
+.chat-messages {
+  height: 350px;
+  background-color: #fff; }
+
+.chat-block {
+  display: none;
+  position: fixed;
+  bottom: 50px;
+  right: 0;
+  width: 300px;
+  height: 400px;
+  background-color: #c7de66;
+  border: 1px solid #1b251a; }
+
+.chat-wrapper {
+  padding: 5px; }
+
+.message-block {
+  padding: 5px; }
+  .message-block > span {
+    padding-right: 5px;
+    font-weight: 700; }
+
+.show {
+  display: block; }
 
 .modal-wrapper {
   display: none;

@@ -1,5 +1,7 @@
 var productsList = document.getElementById('productsList');
 var modalBody = document.querySelector('.modal-window-dialog-body');
+var chatButton = document.getElementById('chatButton');
+var chatBlock = document.querySelector('.chat-block');
 
 var urlGetProducts = 'https://neto-api.herokuapp.com/florist-shop';
 var urlOrder = 'https://neto-api.herokuapp.com/florist-shop/order';
@@ -9,7 +11,7 @@ var urlWebSocket = 'wss://neto-api.herokuapp.com/florist-shop/support';
 var orderData = {};
 
 var products = [
-    /*{id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
+    {id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
     {id: 3, name: "Море роз", "price": 1500, description: "Описание 2", 'image': 'img/2.jpg', 'type': 'flower'},
     {id: 2, name: "Букет роз", "price": 2500, description: "Описание 3", 'image': 'img/3.jpg', 'type': 'flower'},
     {id: 4, name: "Букет нежный", "price": 1200, description: "Очень большой букет, очень длинный текст. Про цветы.", 'image': 'img/4.jpg', 'type': 'flower'},
@@ -19,8 +21,89 @@ var products = [
     {id: 8, name: "Синие розы", "price": 1234, description: "Описание 7", 'image': 'img/image.jpg', 'type': 'flower'},
     {id: 201, name: "Ленточка", "price": 200, description: "Красная лента", 'type': 'additional'},
     {id: 202, name: "Конфеты", "price": 300, description: "Конфеты Raffaelo", 'type': 'additional'},
-    {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}*/
+    {id: 203, name: "Открытка", "price": 100, description: "Красочная открытка", 'type': 'additional'}
 ];
+
+const webSocketObject = {
+    connection: null,
+    tryConnect: 0,
+    _intervalTimeout: 5000,
+    _clientClose: false,
+    _reconnect: false,
+    connect: () => {
+        webSocketObject.connection = new WebSocket(urlWebSocket);
+        webSocketObject.connection.addEventListener('open', webSocketObject.onOpen);
+        webSocketObject.connection.addEventListener('message', webSocketObject.onMessage);
+        webSocketObject.connection.addEventListener('error', webSocketObject.onError);
+        webSocketObject.connection.addEventListener('close', webSocketObject.onClose);
+        
+    },
+    reconnect: () => {
+        if (!webSocketObject._reconnect) {
+            webSocketObject._reconnect = true;
+            webSocketObject.tryConnect++;
+            console.log('Попытка соединения...' + webSocketObject.tryConnect);
+            setTimeout(webSocketObject.connect, webSocketObject._intervalTimeout);
+        }
+    },
+    onOpen: (event) => {
+        webSocketObject._reconnect = false;
+        webSocketObject.tryConnect = 0;
+        webSocketObject._intervalTimeout = 5000;
+        console.log('Соединение установлено...');
+        /*let params = {
+            c: 'connect',
+            d: ''
+            //u: {id: hash}
+        };*/
+        //webSocketObject.send(JSON.stringify(params));
+    },
+    onMessage: (event) => {
+        messagesBlock = document.querySelector('.chat-messages');
+        if (messagesBlock) {
+            messagesBlock.appendChild(createMessage(event.data, 'Менеджер'));
+        }
+    },
+    onError: (event) => {
+        //webSocketObject._reconnect = false;
+        console.log(event);
+        console.log(`Произошла ошибка: ${event.data}`);
+        webSocketObject._intervalTimeout = 10000;
+        webSocketObject.reconnect();
+    },
+    onClose: (event) => {
+        if (webSocketObject._clientClose) {
+            return false;
+        }
+        //webSocketObject._reconnect = false;
+        if (event.wasClean) {
+            console.log('Соединение закрыто корректно');
+        } else {
+            console.log(event.code);
+        }
+        //webSocketObject.tryConnect++;
+        if (webSocketObject.tryConnect > 5) {
+            webSocketObject._intervalTimeout = 10000;
+        }
+        if (webSocketObject.tryConnect > 10) {
+            webSocketObject._intervalTimeout = 20000;
+        }
+        webSocketObject.reconnect();
+    },
+    send: (data) => {
+        if (!webSocketObject.connection) {
+            return false;
+        }
+        webSocketObject.connection.send(data);
+        return true;
+    },
+    close: () => {
+        if (webSocketObject.connection) {
+            webSocketObject._clientClose = true;
+            webSocketObject.connection.close();
+        }
+    }
+}
 
 init();
 
@@ -120,6 +203,43 @@ function getProductById(id) {
     return null;
 }
 
+function readInputModal(step) {
+    if (!step) {
+        step = 1;
+    }
+    var inputs = modalBody.querySelectorAll('input');
+    var temp = [];
+    if (step === 2) {
+        temp = {};
+    }
+    Array.from(inputs).forEach( function(value) {
+        if ((value.type === 'checkbox' || value.type === 'radio')) {
+            if (value.checked) {
+                if (step === 1) {
+                    temp.push(value.value)
+                    //temp[value.name] = value.value;
+                } else {
+                    orderData[value.name] = value.value;
+                }
+            }
+        } else {
+            if (step === 1) {
+                temp.push(value.value);
+            } else {
+                temp[value.name] = value.value;
+            }
+        }
+    });
+    if (temp) {
+        var indexArray = 'product';
+        if (step === 2) {
+            indexArray = 'delivery';
+        }
+        orderData[indexArray] = temp;
+    }
+    
+}
+
 function drawModalStepOne(product_id) {
     clearNode(modalBody);
     var product = getProductById(product_id);
@@ -156,35 +276,21 @@ function drawModalStepOne(product_id) {
         if (value.type != 'additional') {
             return false;
         }
-        var additional = createCheckbox(value.name, 'additional_' + value.id);
+        var additional = createCheckbox(value.name, value.id);
         divRow2.appendChild(additional);
     });
     
     modalBody.appendChild(divRow2);
 
-    var divRow3 = createEl('div', 'row text-right');
+    var divRow3 = createEl('div', 'row bottom-right');
     var buttonNext = createEl('button', 'button-pay');
     buttonNext.innerText = 'Далее';
 
     buttonNext.addEventListener('click', function(event) {
-        var inputs = modalBody.querySelectorAll('input');
-        console.log(inputs);
         orderData = {};
-        Array.from(inputs).forEach( function(value) {
-            //if (value.value) {
-                //console.log(value.name, value.value);
-                if ((value.type === 'checkbox' || value.type === 'radio')) {
-                    if (value.checked) {
-                        orderData[value.name] = value.value;
-                    }
-                    
-                } else {
-                    orderData[value.name] = value.value;
-                }
-                
-            //}
-        });
+        readInputModal();
         console.log(orderData);
+        drawModalStepTwo(product_id);
     });
     
     divRow3.appendChild(buttonNext);
@@ -196,12 +302,22 @@ function drawModalStepTwo(product_id) {
     var inputName = createInput('userName', 'u-full-width', null, 'text');
     modalBody.appendChild(createField('Ваше имя', inputName));
     var inputPhone = createInput('phone', 'u-full-width', null, 'text');
+    inputPhone.addEventListener('keydown', onKeydownNumberOnly);
+    inputPhone.setAttribute('placeholder', '89999999999');
     modalBody.appendChild(createField('Телефон', inputPhone));
     var inputDate = createInput('date', 'u-full-width', null, 'text');
-    modalBody.appendChild(createField('Адрес', inputDate));
+    modalBody.appendChild(createField('Дата', inputDate));
+    var inputAddress = createInput('address', 'u-full-width', null, 'text');
+    modalBody.appendChild(createField('Адрес', inputAddress));
     var buttonPay = createEl('button', 'button-pay');
     buttonPay.innerText = 'Оформить заказ';
-    var divRow3 = createEl('div', 'row text-right');
+    buttonPay.addEventListener('click', function(event) {
+        readInputModal(2);
+        console.log(orderData);
+        //sendData();
+    });
+
+    var divRow3 = createEl('div', 'row bottom-right');
     divRow3.appendChild(buttonPay);
     modalBody.appendChild(divRow3);
 }
@@ -225,6 +341,18 @@ function resize(event) {
     
     if (bodyHeight > allHeight) {
         contentBlock.style = 'margin-bottom: ' + (bodyHeight-allHeight) + 'px';
+    }
+}
+function onKeydownNumberOnly(e) {
+    if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+        (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+        (e.keyCode == 67 && (e.ctrlKey === true || e.metaKey === true)) ||
+        (e.keyCode == 88 && (e.ctrlKey === true || e.metaKey === true)) ||
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+      return;
+    }
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
     }
 }
 
@@ -260,11 +388,50 @@ function createField(labelText, node) {
     return fragment;
 }
 
+function createMessage(message, nameUser) {
+    var messageBlock = createEl('div', 'message-block')
+    var span = createEl('span', 'name-user');
+    span.innerText = nameUser;
+    messageBlock.appendChild(span);
+    var text = document.createTextNode(message);
+    messageBlock.appendChild(text);
+    return messageBlock;
+}
+
+function createChat() {
+    //<div class="chat-messages"></div>
+    //<div class="chat-message-input">
+        //<input name="new-message">
+    //</div>
+    //var fragment = document.createDocumentFragment();
+    var wrapper = createEl('div', 'chat-wrapper');
+    var divMessages = createEl('div', 'chat-messages');
+    var divMessageInput = createEl('div', 'chat-message-input');
+    var inputNewMessage = createInput('newMessage', 'u-full-width', null, 'text');
+    inputNewMessage.addEventListener('keydown', function (event){
+        if (event.keyCode === 13) {
+            
+            messagesBlock = document.querySelector('.chat-messages');
+            if (messagesBlock) {
+                messagesBlock.appendChild(createMessage(inputNewMessage.value, 'Вы'));
+                webSocketObject.send(inputNewMessage.value);
+            }
+            event.target.value = '';
+        }
+    });
+    //fragment.appendChild(divMessages);
+    wrapper.appendChild(divMessages);
+    divMessageInput.appendChild(inputNewMessage);
+    //fragment.appendChild(divMessageInput);
+    wrapper.appendChild(divMessageInput);
+    //return fragment;
+    return wrapper;
+}
+
 function clickForBuy(event) {
     if (event.target.dataset.action === 'order') {
         event.preventDefault();
         var parent = getParentByClassName(event.target, 'flower-product');
-
         console.log(parent.dataset.id);
         drawModalStepOne(parseInt(parent.dataset.id));
         toggleModal();
@@ -296,73 +463,6 @@ function getParentByClassName(node, className) {
             return parentNode;
         }
         curNode = parentNode;
-    }
-}
-
-const webSocketObject = {
-    connection: null,
-    tryConnect: 0,
-    _intervalTimeout: 5000,
-    _clientClose: false,
-    connect: () => {
-      webSocketObject.connection = new WebSocket(urlWebSocket);
-      webSocketObject.connection.addEventListener('open', webSocketObject.onOpen);
-      webSocketObject.connection.addEventListener('message', webSocketObject.onMessage);
-      webSocketObject.connection.addEventListener('error', webSocketObject.onError);
-      webSocketObject.connection.addEventListener('close', webSocketObject.onClose);
-    },
-    onOpen: (event) => {
-      webSocketObject.tryConnect = 0;
-      webSocketObject._intervalTimeout = 5000;
-      console.log('Соединение установлено...');
-      let params = {
-        c: 'connect',
-        d: '',
-        u: {id: hash}
-      };
-      webSocketObject.send(JSON.stringify(params));
-    },
-    onMessage: (event) => {
-      readInstruction(event.data);
-    },
-    onError: (event) => {
-      console.log(`Произошла ошибка: ${error.data}`);
-      webSocketObject.tryConnect++;
-      webSocketObject._intervalTimeout = 10000;
-      setTimeout(webSocketObject.connect, webSocketObject._intervalTimeout);
-    },
-    onClose: (event) => {
-      if (webSocketObject._clientClose) {
-        return false;
-      }
-      if (event.wasClean) {
-        console.log('Соединение закрыто корректно');
-      } else {
-        console.log(event.code);
-      }
-      webSocketObject.tryConnect++;
-      if (webSocketObject.tryConnect > 5) {
-        webSocketObject._intervalTimeout = 10000;
-      }
-      if (webSocketObject.tryConnect > 10) {
-        webSocketObject._intervalTimeout = 20000;
-      }
-      console.log('Попытка соединения...' + webSocketObject.tryConnect);
-      setTimeout(webSocketObject.connect, webSocketObject._intervalTimeout);
-    },
-    send: (data) => {
-      if (!webSocketObject.connection) {
-        return false;
-      }
-      webSocketObject.connection.send(data);
-      return true;
-    },
-    close: () => {
-      if (webSocketObject.connection) {
-        clearAll();
-        webSocketObject._clientClose = true;
-        webSocketObject.connection.close();
-      }
     }
 }
 
@@ -398,7 +498,8 @@ function getJsonData(data) {
 function init() {
     clearNode(productsList);
     document.addEventListener('DOMContentLoaded', resize);
-    sendData(urlGetProducts);
+    //sendData(urlGetProducts);
+    drawProducts();
 	window.addEventListener('resize', resize);
     productsList.addEventListener('click', clickForBuy);
     document.body.addEventListener('click', function (event) {
@@ -410,4 +511,16 @@ function init() {
             toggleModal();
         }
     });
+    chatButton.addEventListener('click', function (event) {
+        
+        if (chatBlock) {
+            if (isHidden(chatBlock)) {
+                chatBlock.classList.add('show');
+            } else {
+                chatBlock.classList.remove('show');
+            }
+        }
+    });
+    chatBlock.appendChild(createChat());
+    webSocketObject.connect();
 }

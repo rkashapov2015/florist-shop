@@ -7,13 +7,14 @@
     </HEAD>
     <BODY>
         <div class="wrapper">
+            <canvas id="canvasBackground"></canvas>
             <header class="header">
                 <div class="container">
                     <div class="row">
                         <div class="six columns">
                             <h1 class="logo">Цветочный магазин</h1>
                         </div>
-                        <div class="six columns text-right">Корзина</div>
+                        <div class="six columns text-right"></div>
                     </div>
                 </div>
             </header>
@@ -26,7 +27,6 @@
                         <div class="four columns text-right">Цветочный магазин 2018</div>
                     </div>
                 </div>
-                
             </footer>
             <div class="modal-wrapper">
                 <div class="modal-window-dialog">
@@ -34,6 +34,10 @@
                     <div class="modal-window-dialog-body"></div>
                 </div>
             </div>
+            <div class="button-chat-block">
+                <button id="chatButton" class="button-chat">Задать вопрос</button>
+            </div>
+            <div class="chat-block"></div>
         </div>
         <script src="js/script.js"></script>
     </BODY>
