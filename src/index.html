@@ -7,7 +7,6 @@
     </HEAD>
     <BODY>
         <div class="wrapper">
-            <canvas id="canvasBackground"></canvas>
             <header class="header">
                 <div class="container">
                     <div class="row">
@@ -18,11 +17,15 @@
                     </div>
                 </div>
             </header>
-            <div id="productsList" class="products-block container"></div>
+            <div class="container" id="container">
+                <canvas id="canvasBackground"></canvas>
+                <div id="productsList" class="products-block"></div>
+            </div>
+            
             <footer class="footer">
                 <div class="container">
                     <div class="row">
-                        <div class="four columns">&nbsp;</div>
+                        <div class="four columns"><a href="#" id="sendReview">Оставить отзыв</a></div>
                         <div class="four columns">&nbsp;</div>
                         <div class="four columns text-right">Цветочный магазин 2018</div>
                     </div>
