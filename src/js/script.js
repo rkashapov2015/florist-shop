@@ -97,6 +97,8 @@ const webSocketObject = {
         webSocketObject.tryConnect = 0;
         webSocketObject._intervalTimeout = 5000;
         console.log('Соединение установлено...');
+        messagesBlock = document.querySelector('.chat-messages');
+        messagesBlock.appendChild(createMessage('Менеджер подключился', ''));
     },
     onMessage: (event) => {
         messagesBlock = document.querySelector('.chat-messages');
@@ -118,6 +120,8 @@ const webSocketObject = {
         //webSocketObject._reconnect = false;
         if (event.wasClean) {
             console.log('Соединение закрыто корректно');
+            messagesBlock = document.querySelector('.chat-messages');
+            messagesBlock.appendChild(createMessage('Менеджер вышел из чата', ''));
         } else {
             console.log(event.code);
         }
