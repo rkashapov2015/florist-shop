@@ -149,8 +149,6 @@ const webSocketObject = {
     }
 }
 
-
-
 function createEl(type, className, id) {
     var element = document.createElement(type);
     if (className) {
