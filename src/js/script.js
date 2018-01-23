@@ -108,7 +108,7 @@ const webSocketObject = {
     },
     onError: (event) => {
         //webSocketObject._reconnect = false;
-        console.log(event);
+        
         console.log(`Произошла ошибка: ${event.data}`);
         webSocketObject._intervalTimeout = 10000;
         webSocketObject.reconnect();
@@ -245,7 +245,7 @@ function readInputModal() {
             data = addValueToArray(data, input.value, input.name);
         }
     });
-    console.log(data);
+    
     return data;
 }
 
@@ -378,7 +378,7 @@ function drawModalStepTwo(product_id) {
     buttonPay.innerText = 'Оформить заказ';
     buttonPay.addEventListener('click', function(event) {
         orderData = Object.assign(orderData, readInputModal());
-        console.log(orderData);
+        
         if (validateModalInput()) {
             console.log('sending data');
             hideModalMessage();
@@ -414,7 +414,7 @@ function drawModalReview() {
             clearNode(modalBody);
             showModalMessage('Подождите');
             var message = JSON.stringify(reviewData);
-            console.log(reviewData);
+            
             sendData(urlReview, message);
         }
     });
@@ -675,7 +675,7 @@ function randomMinMax(min, max, divider) {
   
 function resizeCanvas() {
     var container = document.getElementById('container');
-    console.log(container);
+    
     console.log(container.offsetWidth, container.offsetHeight);
     var w = container.offsetWidth;
     var h = container.offsetHeight;
