@@ -243,13 +243,11 @@ function readInputModal(step) {
         temp = {};
     }
     Array.from(inputs).forEach( function(value) {
-        if ((value.type === 'checkbox' || value.type === 'radio')) {
-            if (value.checked) {
-                if (step === 1) {
-                    temp.push(parseInt(value.value))
-                } else {
-                    orderData[value.name] = parseInt(value.value);
-                }
+        if ((value.type === 'checkbox' || value.type === 'radio') && value.checked) {
+            if (step === 1) {
+                temp.push(parseInt(value.value))
+            } else {
+                orderData[value.name] = parseInt(value.value);
             }
         } else {
             if (step === 1) {
@@ -412,7 +410,9 @@ function drawModalReview() {
             });
             clearNode(modalBody);
             showModalMessage('Подождите');
-            sendData(urlReview, JSON.stringify(reviewData));
+            var message = JSON.stringify(reviewData);
+            console.log(reviewData);
+            sendData(urlReview, message);
         }
     });
     var row3 = createEl('div', 'row bottom-right');
@@ -555,6 +555,7 @@ function getParentByClassName(node, className) {
 
 function sendData(url, data) {
     const xhr = new XMLHttpRequest();
+    
     xhr.addEventListener('load', (e) => {
       console.log(xhr.response);
       readInstruction(xhr.response);
@@ -564,6 +565,10 @@ function sendData(url, data) {
       method = "GET";
     }
     xhr.open(method, url);
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    if (data) {
+        xhr.setRequestHeader("Content-Type", "application/json");
+    }
     xhr.send(data);
 }
 
@@ -709,7 +714,7 @@ function init() {
         event.preventDefault();
         drawModalReview();
         toggleModal();
-    });  
+    });
     
 
 
