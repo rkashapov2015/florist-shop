@@ -233,43 +233,49 @@ function getProductById(id) {
     return null;
 }
 
-function readInputModal(step) {
-    if (!step) {
-        step = 1;
-    }
-    var inputs = modalBody.querySelectorAll('input');
-    var temp = [];
-    if (step === 2) {
-        temp = {};
-    }
-    Array.from(inputs).forEach( function(value) {
-        if ((value.type === 'checkbox' || value.type === 'radio') && value.checked) {
-            if (step === 1) {
-                temp.push(parseInt(value.value))
-            } else {
-                orderData[value.name] = parseInt(value.value);
+function readInputModal() {
+    var inputs = modalBody.querySelectorAll('input, textarea');
+    data = {};
+    Array.from(inputs).forEach(function(input) {
+        if ((input.type === 'checkbox' || input.type === 'radio')) {
+            if (input.checked) {
+                data = addValueToArray(data, input.value, input.name);
             }
         } else {
-            if (step === 1) {
-                temp.push(parseInt(value.value));
-            } else {
-                temp[value.name] = value.value;
-            }
+            data = addValueToArray(data, input.value, input.name);
         }
     });
-    if (temp) {
-        var indexArray = 'products';
-        if (step === 2) {
-            indexArray = 'delivery';
-        }
-        if (indexArray > 2) {
-            orderData = temp;   
-        } else {
-            orderData[indexArray] = temp;
-        }
-    }
-    
+    console.log(data);
+    return data;
 }
+
+function addValueToArray(array, value, name) {
+    if (!array) {
+        return false;
+    }
+
+    var match = name.match(/([a-z_]+)\[([a-zA-Z]+|)\]/i);
+    
+    if (Array.isArray(match) && match[1]) {
+        console.log('match');
+        if (!array[match[1]]) {
+            if (match[2]) {
+                array[match[1]] = {};
+            } else {
+                array[match[1]] = [];
+            }
+        }
+        if (match[2]) {
+            array[match[1]][match[2]] = value;
+        } else {
+            array[match[1]].push(value);
+        }
+    } else {
+        array[name] = value;
+    }
+    return array;
+}
+
 function validateModalInput() {
     var inputs = modalBody.querySelectorAll('input, textarea');
     var emptyInput = false;
@@ -324,7 +330,7 @@ function drawModalStepOne(product_id) {
     divRow.appendChild(divImage);
     divRow.appendChild(divDescrPrice);
     modalBody.appendChild(divRow);
-    var hiddenInput = createInput('flower', null, 'productId', 'hidden');
+    var hiddenInput = createInput('products[]', null, 'productId', 'hidden');
     hiddenInput.value = product_id;
     var divRow2 = createEl('div', 'row');
     divRow2.appendChild(hiddenInput);
@@ -335,7 +341,8 @@ function drawModalStepOne(product_id) {
         if (value.type != 'additional') {
             return false;
         }
-        var additional = createCheckbox(value.name, value.id);
+        //var additional = createCheckbox(value.name, value.id);
+        var additional = createCheckbox(value.name, 'products[]', value.id);
         divRow2.appendChild(additional);
     });
     
@@ -347,7 +354,7 @@ function drawModalStepOne(product_id) {
 
     buttonNext.addEventListener('click', function(event) {
         orderData = {};
-        readInputModal();
+        orderData = readInputModal();
         drawModalStepTwo(product_id);
     });
     
@@ -357,20 +364,20 @@ function drawModalStepOne(product_id) {
 
 function drawModalStepTwo(product_id) {
     clearNode(modalBody);
-    var inputName = createInput('name', 'u-full-width', null, 'text');
+    var inputName = createInput('delivery[name]', 'u-full-width', null, 'text');
     modalBody.appendChild(createField('Ваше имя', inputName));
-    var inputPhone = createInput('phone', 'u-full-width', null, 'text');
+    var inputPhone = createInput('delivery[phone]', 'u-full-width', null, 'text');
     inputPhone.addEventListener('keydown', onKeydownNumberOnly);
     inputPhone.setAttribute('placeholder', '89999999999');
     modalBody.appendChild(createField('Телефон', inputPhone));
-    var inputDate = createInput('date', 'u-full-width', null, 'text');
+    var inputDate = createInput('delivery[date]', 'u-full-width', null, 'text');
     modalBody.appendChild(createField('Дата', inputDate));
-    var inputAddress = createInput('address', 'u-full-width', null, 'text');
+    var inputAddress = createInput('delivery[address]', 'u-full-width', null, 'text');
     modalBody.appendChild(createField('Адрес', inputAddress));
     var buttonPay = createEl('button', 'button-pay');
     buttonPay.innerText = 'Оформить заказ';
     buttonPay.addEventListener('click', function(event) {
-        readInputModal(2);
+        orderData = Object.assign(orderData, readInputModal());
         console.log(orderData);
         if (validateModalInput()) {
             console.log('sending data');
@@ -403,11 +410,7 @@ function drawModalReview() {
         if (!validateModalInput()) {
             showModalMessage('Заполните поля');
         } else {
-            var reviewData = {};
-            
-            Array.from(modalBody.querySelectorAll('input, textarea')).forEach(function(value){
-                reviewData[value.name] = value.value;
-            });
+            var reviewData = readInputModal();
             clearNode(modalBody);
             showModalMessage('Подождите');
             var message = JSON.stringify(reviewData);
@@ -455,10 +458,10 @@ function onKeydownNumberOnly(e) {
     }
 }
 
-function createCheckbox(labelText, name) {
+function createCheckbox(labelText, name, value) {
     var label = createEl('label');
     var input = createInput(name, null, null, 'checkbox');
-    input.value = name;
+    input.value = value;
     label.appendChild(input);
     var span = createEl('span', 'label-body');
     span.innerText = labelText;
