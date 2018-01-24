@@ -249,7 +249,6 @@ function addValueToArray(array, value, name) {
     }
     var match = name.match(/([a-z_]+)\[([a-zA-Z]+|)\]/i);
     if (Array.isArray(match) && match[1]) {
-        console.log('match');
         if (!array[match[1]]) {
             if (match[2]) {
                 array[match[1]] = {};
@@ -374,7 +373,6 @@ function drawModalStepTwo(product_id) {
         orderData = Object.assign(orderData, readInputModal());
         
         if (validateModalInput()) {
-            console.log('sending data');
             hideModalMessage();
             sendData(urlOrder, JSON.stringify(orderData));
             clearNode(modalBody);
@@ -556,7 +554,6 @@ function sendData(url, data) {
     const xhr = new XMLHttpRequest();
     
     xhr.addEventListener('load', (e) => {
-      console.log(xhr.response);
       readInstruction(xhr.response);
     });
     var method = "POST";
@@ -671,8 +668,6 @@ function randomMinMax(min, max, divider) {
   
 function resizeCanvas() {
     var container = document.getElementById('container');
-    
-    console.log(container.offsetWidth, container.offsetHeight);
     var w = container.offsetWidth;
     var h = container.offsetHeight;
     canvas.style.width = w-5 + 'px';
