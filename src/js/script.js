@@ -313,7 +313,7 @@ function drawModalStepOne(product_id) {
     if (!product) {
         return false;
     }
-
+    
     var divRow = createEl('div', 'row');
     var divImage = createEl('div', "six columns modal-image-block");
     var img = createEl('img');
@@ -330,6 +330,7 @@ function drawModalStepOne(product_id) {
     divRow.appendChild(divImage);
     divRow.appendChild(divDescrPrice);
     modalBody.appendChild(divRow);
+    var form = createEl('form');
     var hiddenInput = createInput('products[]', null, 'productId', 'hidden');
     hiddenInput.value = product_id;
     var divRow2 = createEl('div', 'row');
@@ -346,8 +347,9 @@ function drawModalStepOne(product_id) {
         divRow2.appendChild(additional);
     });
     
-    modalBody.appendChild(divRow2);
-
+    //modalBody.appendChild(divRow2);
+    form.appendChild(divRow2);
+    modalBody.appendChild(form);
     var divRow3 = createEl('div', 'row bottom-right');
     var buttonNext = createEl('button', 'button-pay');
     buttonNext.innerText = 'Далее';
