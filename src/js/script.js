@@ -234,18 +234,12 @@ function getProductById(id) {
 }
 
 function readInputModal() {
-    var inputs = modalBody.querySelectorAll('input, textarea');
     data = {};
-    Array.from(inputs).forEach(function(input) {
-        if ((input.type === 'checkbox' || input.type === 'radio')) {
-            if (input.checked) {
-                data = addValueToArray(data, input.value, input.name);
-            }
-        } else {
-            data = addValueToArray(data, input.value, input.name);
-        }
-    });
     
+    var frm = new FormData(modalBody.querySelector('form'));
+    for (var [k, v] of frm) {
+        data = addValueToArray(data, v, k);
+    }
     return data;
 }
 
@@ -253,9 +247,7 @@ function addValueToArray(array, value, name) {
     if (!array) {
         return false;
     }
-
     var match = name.match(/([a-z_]+)\[([a-zA-Z]+|)\]/i);
-    
     if (Array.isArray(match) && match[1]) {
         console.log('match');
         if (!array[match[1]]) {
@@ -342,12 +334,10 @@ function drawModalStepOne(product_id) {
         if (value.type != 'additional') {
             return false;
         }
-        //var additional = createCheckbox(value.name, value.id);
+        
         var additional = createCheckbox(value.name, 'products[]', value.id);
         divRow2.appendChild(additional);
     });
-    
-    //modalBody.appendChild(divRow2);
     form.appendChild(divRow2);
     modalBody.appendChild(form);
     var divRow3 = createEl('div', 'row bottom-right');
@@ -366,16 +356,18 @@ function drawModalStepOne(product_id) {
 
 function drawModalStepTwo(product_id) {
     clearNode(modalBody);
+    var form = createEl('form');
     var inputName = createInput('delivery[name]', 'u-full-width', null, 'text');
-    modalBody.appendChild(createField('Ваше имя', inputName));
+    form.appendChild(createField('Ваше имя', inputName));
     var inputPhone = createInput('delivery[phone]', 'u-full-width', null, 'text');
     inputPhone.addEventListener('keydown', onKeydownNumberOnly);
     inputPhone.setAttribute('placeholder', '89999999999');
-    modalBody.appendChild(createField('Телефон', inputPhone));
+    form.appendChild(createField('Телефон', inputPhone));
     var inputDate = createInput('delivery[date]', 'u-full-width', null, 'text');
-    modalBody.appendChild(createField('Дата', inputDate));
+    form.appendChild(createField('Дата', inputDate));
     var inputAddress = createInput('delivery[address]', 'u-full-width', null, 'text');
-    modalBody.appendChild(createField('Адрес', inputAddress));
+    form.appendChild(createField('Адрес', inputAddress));
+    modalBody.appendChild(form);
     var buttonPay = createEl('button', 'button-pay');
     buttonPay.innerText = 'Оформить заказ';
     buttonPay.addEventListener('click', function(event) {
@@ -392,7 +384,7 @@ function drawModalStepTwo(product_id) {
         }
         
     });
-
+    
     var divRow3 = createEl('div', 'row bottom-right');
     divRow3.appendChild(buttonPay);
     modalBody.appendChild(divRow3);
@@ -401,11 +393,13 @@ function drawModalStepTwo(product_id) {
 
 function drawModalReview() {
     clearNode(modalBody);
+    var frm = createEl('form');
     var inputName = createInput('name', 'u-full-width', null, 'text');
-    modalBody.appendChild(createField('Ваше имя', inputName));
+    frm.appendChild(createField('Ваше имя', inputName));
     var textarea = createEl('textarea', 'u-full-width', null, 'text');
     textarea.name = 'text';
-    modalBody.appendChild(createField('Ваш отзыв', textarea));
+    frm.appendChild(createField('Ваш отзыв', textarea));
+    modalBody.appendChild(frm);
     var buttonSend = createEl('button', 'button-pay');
     buttonSend.innerText = 'Отправить отзыв';
     buttonSend.addEventListener('click', function(event) {
