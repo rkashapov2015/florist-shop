@@ -374,7 +374,7 @@ function drawModalStepTwo(product_id) {
         
         if (validateModalInput()) {
             hideModalMessage();
-            sendData(urlOrder, JSON.stringify(orderData));
+            sendData(urlOrder, JSON.stringify(orderData), readInstruction);
             clearNode(modalBody);
             showModalMessage('Подождите...');
         } else {
@@ -409,7 +409,7 @@ function drawModalReview() {
             showModalMessage('Подождите');
             var message = JSON.stringify(reviewData);
             
-            sendData(urlReview, message);
+            sendData(urlReview, message, readInstruction);
         }
     });
     var row3 = createEl('div', 'row bottom-right');
@@ -550,22 +550,35 @@ function getParentByClassName(node, className) {
     }
 }
 
-function sendData(url, data) {
+function sendData(url, data, func, errorFunc) {
     const xhr = new XMLHttpRequest();
     
     xhr.addEventListener('load', (e) => {
-      readInstruction(xhr.response);
+        if (func) {
+            func(xhr.response);
+        } else {
+            console.log(xhr.response);
+        }
+    });
+    xhr.addEventListener('error', function (e) {
+        if (errorFunc) {
+            errorFunc(e);
+        } else {
+            console.log("Ошибка " + e.target.status);
+        }
     });
     var method = "POST";
     if (!data) {
       method = "GET";
     }
     xhr.open(method, url);
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    //xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     if (data) {
         xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+    } else {
+        xhr.send();
     }
-    xhr.send(data);
 }
 
 function readInstruction(data) {
@@ -679,7 +692,7 @@ function resizeCanvas() {
 function init() {
     clearNode(productsList);
     document.addEventListener('DOMContentLoaded', resize);
-    sendData(urlGetProducts);
+    sendData(urlGetProducts, null, readInstruction);
     
 	window.addEventListener('resize', resize);
     productsList.addEventListener('click', clickForBuy);
