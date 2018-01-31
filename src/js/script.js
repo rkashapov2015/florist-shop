@@ -509,6 +509,7 @@ function initData(data) {
         products = object.product;
         drawProducts();
         resize();
+        initPaint();
     }
 }
 

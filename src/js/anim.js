@@ -62,7 +62,7 @@ function createArc(x, y, size) {
     ctx.restore();
 }
 
-window.addEventListener('load', function () {
+function initPaint() {
     for (var i = 0; i< randomMinMax(500, 200, 1); i++) {
         var x = Math.floor(Math.random() * canvas.width);
         var y = Math.floor(Math.random() * canvas.height);
@@ -88,7 +88,7 @@ window.addEventListener('load', function () {
         };
     }
     tick();
-});
+}
 
 function repaint() {
     clearCanvas();
