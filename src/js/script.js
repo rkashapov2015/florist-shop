@@ -11,17 +11,7 @@ var urlReview = 'https://neto-api.herokuapp.com/florist-shop/review';
 var urlWebSocket = 'wss://neto-api.herokuapp.com/florist-shop/support';
 
 var orderData = {};
-var canvas = document.getElementById('canvasBackground');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-window.addEventListener('resize', (event) => {
-  clearCanvas();
-  resizeCanvas();
-});
-const PI = Math.PI;
-
-var ctx = canvas.getContext('2d');
 
 var array = [];
 
@@ -41,34 +31,7 @@ var products = [
 
 init();
 
-function createCross(x, y, size, rotate) {
-    var length = 20 * size;
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(x,y);
-    ctx.rotate(rotate);
-    ctx.moveTo(-length/2,0);
-    ctx.lineTo(length/2,0);
-    ctx.moveTo(0, -length/2);
-    ctx.lineTo(0,length/2);
-    ctx.lineWidth = 5 * size;
-    ctx.strokeStyle = '#ffffff';
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
-}
-  
-function createArc(x, y, size) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(x,y);
-    ctx.arc(0, 0, 12*size, 0, 2*Math.PI, false);
-    ctx.lineWidth = 5 * size;
-    ctx.strokeStyle = '#ffffff';
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
-}
+
 
 const webSocketObject = {
     connection: null,
@@ -156,6 +119,50 @@ function createEl(type, className, id) {
     }
     if (id) {
         element.id = id;
+    }
+    return element;
+}
+
+function createCheckbox(labelText, name, value) {
+    var label = createEl('label');
+    var input = createInput(name, null, null, 'checkbox');
+    input.value = value;
+    label.appendChild(input);
+    var span = createEl('span', 'label-body');
+    span.innerText = labelText;
+    label.appendChild(span);
+    return label;
+}
+
+function createInput(name, className, id, inputType) {
+    var input = createEl('input', className, id);
+    if (inputType) {
+        input.setAttribute('type', inputType);
+    }
+    if (name) {
+        input.setAttribute('name', name);
+    }
+    return input;
+}
+
+function createField(labelText, node) {
+    var fragment = document.createDocumentFragment();
+    var label = createEl('label');
+    label.innerText = labelText;
+    fragment.appendChild(label);
+    fragment.appendChild(node);
+    return fragment;
+}
+
+function el(tagName, attributes, children) {
+    const element = document.createElement(tagName);
+    if (typeof attributes === 'object') {
+        Object.keys(attributes).forEach(i => element.setAttribute(i, attributes[i]));
+    }
+    if (typeof children === 'string') {
+        element.textContent = children;
+    } else if (children instanceof Array) {
+        children.forEach(child => element.appendChild(child));
     }
     return element;
 }
@@ -452,36 +459,7 @@ function onKeydownNumberOnly(e) {
     }
 }
 
-function createCheckbox(labelText, name, value) {
-    var label = createEl('label');
-    var input = createInput(name, null, null, 'checkbox');
-    input.value = value;
-    label.appendChild(input);
-    var span = createEl('span', 'label-body');
-    span.innerText = labelText;
-    label.appendChild(span);
-    return label;
-}
 
-function createInput(name, className, id, inputType) {
-    var input = createEl('input', className, id);
-    if (inputType) {
-        input.setAttribute('type', inputType);
-    }
-    if (name) {
-        input.setAttribute('name', name);
-    }
-    return input;
-}
-
-function createField(labelText, node) {
-    var fragment = document.createDocumentFragment();
-    var label = createEl('label');
-    label.innerText = labelText;
-    fragment.appendChild(label);
-    fragment.appendChild(node);
-    return fragment;
-}
 
 function createMessage(message, nameUser) {
     var messageBlock = createEl('div', 'message-block')
@@ -612,7 +590,7 @@ function orderWork(success) {
     message = 'Произошла ошибка';
     if (success) {
         message = 'Ваш заказ был создан';
-    } 
+    }
     showModalMessage(message);
 }
 function reviewWork(success) {
@@ -634,59 +612,6 @@ function getJsonData(data) {
     } catch (error) {
       return {};
     }
-}
-
-function tick() {
-    setTimeout(repaint, 50);
-    window.requestAnimationFrame(tick);
-}
-  
-function repaint() {
-    clearCanvas();
-    for (var i = 0; i< array.length; i++) {
-        var object = array[i];    
-        var point = object.func(object.x, object.y, Date.now());
-        if (object.type === 'cross') {
-            object.r += object.ang;
-            if (object.r > 2* PI) object.r = 0;
-            if (object.r < 0) object.r = 2*PI;
-            createCross(point.x,point.y, object.size, object.r);  
-        } else {
-            createArc(point.x,point.y, object.size);  
-        }
-    }
-}
-  
-function nextPointOne(x, y, time) {
-    return {
-        x: x + Math.sin((50 + x + (time / 10)) / 100) * 3,
-        y: y + Math.sin((45 + x + (time / 10)) / 100) * 4
-    };
-}
-function nextPointTwo(x, y, time) {
-    return {
-      x: x + Math.sin((x + (time / 10)) / 100) * 5,
-      y: y + Math.sin((10 + x + (time / 10)) / 100) * 2
-    }
-}
-function clearCanvas() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-}
-  
-function randomMinMax(min, max, divider) {
-    if(!divider) divider = 1;
-    var rand = (min + (Math.random() * (max + 0.01 - min)));
-    return Math.floor(rand*divider)/divider;
-}
-  
-function resizeCanvas() {
-    var container = document.getElementById('container');
-    var w = container.offsetWidth;
-    var h = container.offsetHeight;
-    canvas.style.width = w-5 + 'px';
-    canvas.style.height = h-5 + 'px';
-    canvas.width = w;
-    canvas.height = h;
 }
 
 function init() {
@@ -722,32 +647,4 @@ function init() {
         drawModalReview();
         toggleModal();
     });
-    
-
-
-    for (var i = 0; i< randomMinMax(500, 200, 1); i++) {
-        var x = Math.floor(Math.random() * canvas.width);
-        var y = Math.floor(Math.random() * canvas.height);
-        var r = randomMinMax(0,2*PI, 100);
-        var type = '';
-        var size = randomMinMax(0.1,0.6, 100);
-        if(Math.floor(Math.random() * 100) > 50) {
-          createCross(x, y, size, r);
-          type = 'cross';
-        } else {
-          createArc(x, y, size);
-          type = 'arc';
-        }
-        var angularVelocity = randomMinMax(-0.2,0.2, 1000);
-        array[i] = {
-          x: x, 
-          y: y, 
-          r: r,
-          size: size,
-          ang: angularVelocity, 
-          type: type, 
-          func: Math.floor(Math.random() * 100) > 50?nextPointOne:nextPointTwo
-        };
-    }
-    tick();
 }
