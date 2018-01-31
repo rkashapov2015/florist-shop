@@ -80,7 +80,6 @@ const webSocketObject = {
         if (webSocketObject._clientClose) {
             return false;
         }
-        //webSocketObject._reconnect = false;
         if (event.wasClean) {
             console.log('Соединение закрыто корректно');
             messagesBlock = document.querySelector('.chat-messages');
@@ -88,7 +87,6 @@ const webSocketObject = {
         } else {
             console.log(event.code);
         }
-        //webSocketObject.tryConnect++;
         if (webSocketObject.tryConnect > 5) {
             webSocketObject._intervalTimeout = 10000;
         }
@@ -112,48 +110,6 @@ const webSocketObject = {
     }
 }
 
-function createEl(type, className, id) {
-    var element = document.createElement(type);
-    if (className) {
-        element.className = className;
-    }
-    if (id) {
-        element.id = id;
-    }
-    return element;
-}
-
-function createCheckbox(labelText, name, value) {
-    var label = createEl('label');
-    var input = createInput(name, null, null, 'checkbox');
-    input.value = value;
-    label.appendChild(input);
-    var span = createEl('span', 'label-body');
-    span.innerText = labelText;
-    label.appendChild(span);
-    return label;
-}
-
-function createInput(name, className, id, inputType) {
-    var input = createEl('input', className, id);
-    if (inputType) {
-        input.setAttribute('type', inputType);
-    }
-    if (name) {
-        input.setAttribute('name', name);
-    }
-    return input;
-}
-
-function createField(labelText, node) {
-    var fragment = document.createDocumentFragment();
-    var label = createEl('label');
-    label.innerText = labelText;
-    fragment.appendChild(label);
-    fragment.appendChild(node);
-    return fragment;
-}
-
 function el(tagName, attributes, children) {
     const element = document.createElement(tagName);
     if (typeof attributes === 'object') {
@@ -174,47 +130,22 @@ function clearNode(node) {
 }
 
 function createProduct(product) {
-    var block = createEl('div', 'flower-product');
-    if (product.hasOwnProperty('id')) {
-        block.dataset.id = product.id;
-    }
-    var flowerImage = createEl('div', 'flower-product-image');
-    var img = createEl('img');
-    if (product.hasOwnProperty('image')) {
-        img.src = product.image;
-    } else {
-        img.src = 'img/image.jpg';
-    }
-    flowerImage.appendChild(img);
-
-    var divDescr = createEl('div', 'flower-product-descr');
-    var divName = createEl('div', 'flower-product-image-name');
-    if (product.hasOwnProperty('name')) {
-        divName.innerText = product.name;
-    }
-    divDescr.appendChild(divName);
-
-    var divPrice = createEl('div', 'flower-product-image-price');
-    if (product.hasOwnProperty('price')) {
-        divPrice.innerText = product.price + ' руб.';
-    }
-    divDescr.appendChild(divPrice);
-
-    var button = createEl('button', 'button-buy position-right-bottom');
-    button.innerText = 'Заказать';
-    button.dataset.action = 'order';
-    divDescr.appendChild(button);
-
-    flowerImage.appendChild(divDescr);
-    block.appendChild(flowerImage);
-
-    var wrapper = createEl('div', 'flower-product-wrapper three columns');
-    wrapper.appendChild(block);
-    return wrapper;
+    return el('div', {class: 'flower-product-wrapper three columns'},[
+        el('div', {class: 'flower-product', "data-id": product.hasOwnProperty('id')?product.id:null},[
+            el('div', {class: 'flower-product-image'}, [
+                el('img', {src: product.hasOwnProperty('image')?product.image:'img/image.png'}),
+                el('div', {class: 'flower-product-descr'}, [
+                    el('div', {class: 'flower-product-image-name'}, product.hasOwnProperty('name')?product.name:''),
+                    el('div', {class: 'flower-product-image-price'}, product.hasOwnProperty('price')?product.price + ' руб.':''),
+                    el('button', {class: 'button-buy position-right-bottom', "data-action":'order'}, 'Заказать')
+                ])
+            ])
+        ] )
+    ]);    
 }
 
 function drawProducts() {
-    var row = createEl('div', 'row');
+    var row = el('div', {class:'row'});
     var i = 0;
     products.forEach(function(value, index) {
         if (value.type != 'flower') {
@@ -226,7 +157,7 @@ function drawProducts() {
         if (i % 4 == 0 || (index+1)>=products.length) {
             productsList.appendChild(row);
             row = null;
-            row = createEl('div', 'row');
+            row = el('div', {class:'row'});
         }
     });
 }
@@ -292,7 +223,7 @@ function validateModalInput() {
 function showModalMessage(textMessage) {
     var messageBlock = modalBody.querySelector('.modal-message-block');
     if (!messageBlock) {
-        messageBlock = createEl('div', 'modal-message-block');
+        messageBlock = el('div', {class: 'modal-message-block'});
         modalBody.appendChild(messageBlock);
     }
     messageBlock.innerText = textMessage;
@@ -311,77 +242,71 @@ function drawModalStepOne(product_id) {
     if (!product) {
         return false;
     }
-    
-    var divRow = createEl('div', 'row');
-    var divImage = createEl('div', "six columns modal-image-block");
-    var img = createEl('img');
-    img.src = product.image;
-    divImage.appendChild(img);
-    var divDescrPrice = createEl('div', 'six columns modal-descr-block');
-    var priceP = createEl('p');
-    priceP.innerText = product.price + 'руб.';
-
-    var descrP = createEl('p');
-    descrP.innerText = product.description;
-    divDescrPrice.appendChild(priceP);
-    divDescrPrice.appendChild(descrP);
-    divRow.appendChild(divImage);
-    divRow.appendChild(divDescrPrice);
-    modalBody.appendChild(divRow);
-    var form = createEl('form');
-    var hiddenInput = createInput('products[]', null, 'productId', 'hidden');
-    hiddenInput.value = product_id;
-    var divRow2 = createEl('div', 'row');
-    divRow2.appendChild(hiddenInput);
-    var p = createEl('p');
-    p.innerText = 'Дополнительные товары';
-    divRow2.appendChild(p);
-    products.forEach(function(value, index) {
+    var checkboxes = [];
+    for (var value of products) {
         if (value.type != 'additional') {
-            return false;
+            continue;
         }
-        
-        var additional = createCheckbox(value.name, 'products[]', value.id);
-        divRow2.appendChild(additional);
-    });
-    form.appendChild(divRow2);
-    modalBody.appendChild(form);
-    var divRow3 = createEl('div', 'row bottom-right');
-    var buttonNext = createEl('button', 'button-pay');
-    buttonNext.innerText = 'Далее';
-
+        checkboxes.push(el('label', {}, [
+            el('input', {type: 'checkbox', name: 'products[]', value: value.id}),
+            el('span', {class: 'label-body'}, value.name)
+        ]));
+    }
+    var buttonNext = el('button', {class:'button-pay'}, 'Далее');
     buttonNext.addEventListener('click', function(event) {
         orderData = {};
         orderData = readInputModal();
         drawModalStepTwo(product_id);
     });
-    
-    divRow3.appendChild(buttonNext);
-    modalBody.appendChild(divRow3);
+    var offal = [
+        el('input', {type: 'hidden', name: 'products[]', id: 'productId', value: product_id}), 
+        el('p',{}, 'Дополнительные параметры')
+    ];
+    offal = offal.concat(checkboxes);
+    var stepOne = [
+        el('div', {class:'row'}, [
+            el('div', {class:'six columns modal-image-block'}, [
+                el('img', {src: product.image}),
+            ]),
+            el('div', {class:'six columns modal-descr-block'}, [
+                el('p', {}, product.price + ' руб.'),
+                el('p', {}, product.description)
+            ])
+        ]),
+        el('form', {}, [
+            el('div', {class: 'row'}, offal)
+        ]),
+        el('div', {class: 'row bottom-right'}, [buttonNext])
+    ];
+    var fragment = stepOne.reduce((fragment, current) => {
+        fragment.appendChild(current);
+        return fragment;
+    }, document.createDocumentFragment());
+    modalBody.appendChild(fragment);
 }
+
+
 
 function drawModalStepTwo(product_id) {
     clearNode(modalBody);
-    var form = createEl('form');
-    var inputName = createInput('delivery[name]', 'u-full-width', null, 'text');
-    form.appendChild(createField('Ваше имя', inputName));
-    var inputPhone = createInput('delivery[phone]', 'u-full-width', null, 'text');
+    var inputPhone = el('input', {class: 'u-full-width', type: 'text', name: 'delivery[phone]', placeholder: '89999999999'});
     inputPhone.addEventListener('keydown', onKeydownNumberOnly);
-    inputPhone.setAttribute('placeholder', '89999999999');
-    form.appendChild(createField('Телефон', inputPhone));
-    var inputDate = createInput('delivery[date]', 'u-full-width', null, 'text');
-    form.appendChild(createField('Дата', inputDate));
-    var inputAddress = createInput('delivery[address]', 'u-full-width', null, 'text');
-    form.appendChild(createField('Адрес', inputAddress));
-    modalBody.appendChild(form);
-    var buttonPay = createEl('button', 'button-pay');
-    buttonPay.innerText = 'Оформить заказ';
+    modalBody.appendChild(el('form',{}, [
+        el('label', {}, 'Ваше имя'),
+        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[name]'}),
+        el('label', {}, 'Телефон'),
+        inputPhone,
+        el('label', {}, 'Дата'),
+        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[date]'}),
+        el('label', {}, 'Адрес'),
+        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[address]'})
+    ]));
+    var buttonPay = el('button', {class:'button-pay'}, 'Оформить заказ');
     buttonPay.addEventListener('click', function(event) {
         orderData = Object.assign(orderData, readInputModal());
-        
         if (validateModalInput()) {
             hideModalMessage();
-            sendData(urlOrder, JSON.stringify(orderData), readInstruction);
+            sendData(urlOrder, orderData, orderWork, errorHandler);
             clearNode(modalBody);
             showModalMessage('Подождите...');
         } else {
@@ -389,24 +314,23 @@ function drawModalStepTwo(product_id) {
         }
         
     });
-    
-    var divRow3 = createEl('div', 'row bottom-right');
-    divRow3.appendChild(buttonPay);
-    modalBody.appendChild(divRow3);
-    
+    modalBody.appendChild(el('div', {class: 'row bottom-right'},[
+        buttonPay
+    ]));
 }
 
 function drawModalReview() {
     clearNode(modalBody);
-    var frm = createEl('form');
-    var inputName = createInput('name', 'u-full-width', null, 'text');
-    frm.appendChild(createField('Ваше имя', inputName));
-    var textarea = createEl('textarea', 'u-full-width', null, 'text');
-    textarea.name = 'text';
-    frm.appendChild(createField('Ваш отзыв', textarea));
-    modalBody.appendChild(frm);
-    var buttonSend = createEl('button', 'button-pay');
-    buttonSend.innerText = 'Отправить отзыв';
+    modalBody.appendChild(
+        el('form',{}, 
+        [
+            el('label', {}, 'Ваше имя'),
+            el('input', {class: 'u-full-width', type: 'text', name: 'name'}),
+            el('label', {}, 'Ваш отзыв'),
+            el('textarea', {class: 'u-full-width', name: 'text'})
+        ]
+    ));
+    var buttonSend = el('button', {class:'button-pay'}, 'Отправить отзыв');
     buttonSend.addEventListener('click', function(event) {
         if (!validateModalInput()) {
             showModalMessage('Заполните поля');
@@ -414,14 +338,12 @@ function drawModalReview() {
             var reviewData = readInputModal();
             clearNode(modalBody);
             showModalMessage('Подождите');
-            var message = JSON.stringify(reviewData);
-            
-            sendData(urlReview, message, readInstruction);
+            sendData(urlReview, reviewData, reviewWork, errorHandler);
         }
     });
-    var row3 = createEl('div', 'row bottom-right');
-    row3.appendChild(buttonSend);
-    modalBody.appendChild(row3);
+    modalBody.appendChild(el('div', {class: 'row bottom-right'}, [
+        buttonSend
+    ]));
 }
 
 function resize(event) {
@@ -459,24 +381,17 @@ function onKeydownNumberOnly(e) {
     }
 }
 
-
-
 function createMessage(message, nameUser) {
-    var messageBlock = createEl('div', 'message-block')
-    var span = createEl('span', 'name-user');
-    span.innerText = nameUser;
-    messageBlock.appendChild(span);
-    var text = document.createTextNode(message);
-    messageBlock.appendChild(text);
-    return messageBlock;
+    var text = document.createTextNode(message)
+    return el('div', {class: 'message-block'}, [
+        el('span', {class: 'name-user'}, nameUser),
+        text
+    ]);
 }
 
 function createChat() {
-    var wrapper = createEl('div', 'chat-wrapper');
-    var divMessages = createEl('div', 'chat-messages');
-    var divMessageInput = createEl('div', 'chat-message-input');
-    var inputNewMessage = createInput('newMessage', 'u-full-width', null, 'text');
-    inputNewMessage.addEventListener('keydown', function (event){
+    var inputNewMessage = el('input', {name:'newMessage', class:'u-full-width', type:'text'});
+    inputNewMessage.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
             messagesBlock = document.querySelector('.chat-messages');
             if (messagesBlock) {
@@ -486,10 +401,12 @@ function createChat() {
             event.target.value = '';
         }
     });
-    wrapper.appendChild(divMessages);
-    divMessageInput.appendChild(inputNewMessage);
-    wrapper.appendChild(divMessageInput);
-    return wrapper;
+    return el('div', {class: 'chat-wrapper'},[
+        el('div', {class: 'chat-messages'}),
+        el('div', {class: 'chat-message-input'}, [
+            inputNewMessage
+        ])
+    ]);
 }
 
 function clickForBuy(event) {
@@ -528,6 +445,10 @@ function getParentByClassName(node, className) {
     }
 }
 
+function errorHandler(e) {
+    console.log(e);
+}
+
 function sendData(url, data, func, errorFunc) {
     const xhr = new XMLHttpRequest();
     
@@ -553,7 +474,7 @@ function sendData(url, data, func, errorFunc) {
     //xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     if (data) {
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(data);
+        xhr.send(JSON.stringify(data));
     } else {
         xhr.send();
     }
@@ -582,7 +503,18 @@ function readInstruction(data) {
     }
 }
 
-function orderWork(success) {
+function initData(data) {
+    var object = getJsonData(data);
+    if (object.hasOwnProperty('product')) {
+        products = object.product;
+        drawProducts();
+        resize();
+    }
+}
+
+function orderWork(data) {
+    var object = getJsonData(data);
+    var success = object.success;
     if (isHidden(modalWrapper)) {
         toggleModal();    
     }
@@ -593,7 +525,9 @@ function orderWork(success) {
     }
     showModalMessage(message);
 }
-function reviewWork(success) {
+function reviewWork(data) {
+    var object = getJsonData(data);
+    var success = object.success;
     if (isHidden(modalWrapper)) {
         toggleModal();
     }
@@ -617,7 +551,7 @@ function getJsonData(data) {
 function init() {
     clearNode(productsList);
     document.addEventListener('DOMContentLoaded', resize);
-    sendData(urlGetProducts, null, readInstruction);
+    sendData(urlGetProducts, null, initData, errorHandler);
     
 	window.addEventListener('resize', resize);
     productsList.addEventListener('click', clickForBuy);

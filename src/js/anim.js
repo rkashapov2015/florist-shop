@@ -4,8 +4,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 window.addEventListener('resize', (event) => {
-  clearCanvas();
-  resizeCanvas();
+  //clearCanvas();
+  //resizeCanvas();
 });
 const PI = Math.PI;
 
