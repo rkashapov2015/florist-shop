@@ -12,6 +12,9 @@ html, body {
 canvas {
   position: absolute; }
 
+.main-block {
+  padding-top: 20px; }
+
 .button-buy, .button-pay, .button-chat {
   display: inline-block;
   padding: 5px 10px;
@@ -57,9 +60,10 @@ canvas {
   bottom: 12px; }
 
 .products-block {
-  padding-top: 20px; }
-  .products-block > .row {
-    margin-bottom: 4%; }
+  padding: 20px;
+  background-color: #fff; }
+  .products-block > .row + .row {
+    margin-top: 4%; }
 
 .logo {
   text-shadow: 1px 1px 5px #6c912b; }

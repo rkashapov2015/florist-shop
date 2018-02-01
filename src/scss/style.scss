@@ -20,6 +20,10 @@ canvas {
     position: absolute;
 }
 
+.main-block {
+    padding-top: 20px;
+}
+
 .button-buy, .button-pay, .button-chat {
     display: inline-block;
     padding: 5px 10px;
@@ -69,9 +73,10 @@ canvas {
 }
 
 .products-block {
-    padding-top: 20px;
-    & > .row {
-        margin-bottom: 4%;
+    padding: 20px;
+    background-color: #fff;
+    & > .row + .row {
+        margin-top: 4%;
     }
 }
 
