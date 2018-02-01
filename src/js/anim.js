@@ -35,14 +35,38 @@ function createCross(x, y, size, rotate) {
 
 function createStar(x, y, size, rotate) {
     var length = 20 * size;
+    //0,00	10
+    //-9,51	3,09
+    //-5,88	-8,09
+    //5,88	-8,09
+    //9,51	3,09
+    //0	    10
+
+    //0,00	10
+    //-5,88	-8,09
+    //9,51	3,09
+    //-9,51	3,09
+    //5,88	-8,09
+    //0,00	10
+
     ctx.save();
     ctx.beginPath();
     ctx.translate(x,y);
     ctx.rotate(rotate);
-    ctx.moveTo(-length/2,0);
-    ctx.lineTo(length/2,0);
-    ctx.moveTo(0, -length/2);
-    ctx.lineTo(0,length/2);
+    ctx.moveTo(0,(10*size));
+    
+    ctx.lineTo(-(5.88*size),-(8.09*size));
+
+    ctx.lineTo(9.51*size,3.09*size);
+
+    ctx.lineTo(-(9.51*size),3.09*size);
+
+    ctx.lineTo((5.88*size),-(8.09*size));
+
+    ctx.lineTo(0,(10*size));
+
+    ctx.lineTo(-(5.88*size),-(8.09*size));
+
     ctx.lineWidth = 5 * size;
     ctx.strokeStyle = '#ffffff';
     ctx.stroke();
@@ -70,7 +94,8 @@ function initPaint() {
         var type = '';
         var size = randomMinMax(0.1,0.6, 100);
         if(Math.floor(Math.random() * 100) > 50) {
-          createCross(x, y, size, r);
+          //createCross(x, y, size, r);
+          createStar(x,y,size, r);
           type = 'cross';
         } else {
           createArc(x, y, size);
@@ -99,7 +124,8 @@ function repaint() {
             object.r += object.ang;
             if (object.r > 2* PI) object.r = 0;
             if (object.r < 0) object.r = 2*PI;
-            createCross(point.x,point.y, object.size, object.r);  
+            //createCross(point.x,point.y, object.size, object.r);
+            createStar(point.x,point.y,object.size, object.r);
         } else {
             createArc(point.x,point.y, object.size);  
         }
