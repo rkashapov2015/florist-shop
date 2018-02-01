@@ -23,6 +23,7 @@ var canvasAnimator = {
         window.requestAnimationFrame(canvasAnimator.tick);
     },
     run: function() {
+        canvasAnimator.dataPoints = [];
         for (var i = 0; i< randomMinMax(500, 200, 1); i++) {
             var x = Math.floor(Math.random() * canvasAnimator.canvas.width);
             var y = Math.floor(Math.random() * canvasAnimator.canvas.height);
@@ -49,7 +50,7 @@ var canvasAnimator = {
                 type = 'triangle';
             }
     
-            var angularVelocity = randomMinMax(-0.2,0.2, 1000);
+            var angularVelocity = randomMinMax(-0.03,0.03, 1000);
             canvasAnimator.dataPoints[i] = {
               x: x, 
               y: y, 
