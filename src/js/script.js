@@ -13,7 +13,7 @@ var urlWebSocket = 'wss://neto-api.herokuapp.com/florist-shop/support';
 var orderData = {};
 
 
-var array = [];
+
 
 var products = [
     /*{id: 1, name: "Букет тюльпанов", "price": 2300, description: "Описание 1", 'image': 'img/1.jpg', 'type': 'flower'},
@@ -365,7 +365,7 @@ function resize(event) {
     if (bodyHeight > allHeight) {
         contentBlock.style = 'margin-bottom: ' + (bodyHeight-allHeight) + 'px';
     }
-    resizeCanvas();
+    canvasAnimator.resize();
 }
 
 function onKeydownNumberOnly(e) {
@@ -508,8 +508,11 @@ function initData(data) {
     if (object.hasOwnProperty('product')) {
         products = object.product;
         drawProducts();
+        
+        //initPaint();
+        canvasAnimator.init(document.getElementById('canvasBackground'), document.getElementById('productsList'));
+        canvasAnimator.run();
         resize();
-        initPaint();
     }
 }
 
