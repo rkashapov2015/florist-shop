@@ -480,29 +480,6 @@ function sendData(url, data, func, errorFunc) {
     }
 }
 
-function readInstruction(data) {
-    var object = getJsonData(data);
-    if (object.hasOwnProperty('product')) {
-        products = object.product;
-        drawProducts();
-        resize();
-    }
-    if (object.hasOwnProperty('type')) {
-        var success = false;
-        if (object.hasOwnProperty('success')) {
-            success = object.success;
-        }
-        switch(object.type) {
-            case 'order':
-                orderWork(success);
-            break;
-            case 'review':
-                reviewWork(success);
-            break;
-        }
-    }
-}
-
 function initData(data) {
     var object = getJsonData(data);
     if (object.hasOwnProperty('product')) {
