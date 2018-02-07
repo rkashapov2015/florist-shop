@@ -11,7 +11,9 @@ var urlReview = 'https://neto-api.herokuapp.com/florist-shop/review';
 var urlWebSocket = 'wss://neto-api.herokuapp.com/florist-shop/support';
 
 var orderData = {};
-
+var offal = null;
+var stepTwoForm = null;
+var reviewForm = null;
 
 
 
@@ -242,27 +244,28 @@ function drawModalStepOne(product_id) {
     if (!product) {
         return false;
     }
-    var checkboxes = [];
-    for (var value of products) {
-        if (value.type != 'additional') {
-            continue;
-        }
-        checkboxes.push(el('label', {}, [
-            el('input', {type: 'checkbox', name: 'products[]', value: value.id}),
-            el('span', {class: 'label-body'}, value.name)
-        ]));
-    }
+    
     var buttonNext = el('button', {class:'button-pay'}, 'Далее');
     buttonNext.addEventListener('click', function(event) {
         orderData = {};
         orderData = readInputModal();
         drawModalStepTwo(product_id);
     });
-    var offal = [
-        el('input', {type: 'hidden', name: 'products[]', id: 'productId', value: product_id}), 
-        el('p',{}, 'Дополнительные параметры')
-    ];
-    offal = offal.concat(checkboxes);
+    if (!offal) {
+        offal = document.createDocumentFragment();
+        offal.appendChild(el('input', {type: 'hidden', name: 'products[]', id: 'productId', value: product_id}));
+        offal.appendChild(el('p',{}, 'Дополнительные параметры'));
+        for (var value of products) {
+            if (value.type != 'additional') {
+                continue;
+            }
+            offal.appendChild(el('label', {}, [
+                el('input', {type: 'checkbox', name: 'products[]', value: value.id}),
+                el('span', {class: 'label-body'}, value.name)
+            ]));
+        }
+    }
+    
     var stepOne = [
         el('div', {class:'row'}, [
             el('div', {class:'six columns modal-image-block'}, [
@@ -274,7 +277,7 @@ function drawModalStepOne(product_id) {
             ])
         ]),
         el('form', {}, [
-            el('div', {class: 'row'}, offal)
+            el('div', {class: 'row'}, [offal.cloneNode(true)])
         ]),
         el('div', {class: 'row bottom-right'}, [buttonNext])
     ];
@@ -289,19 +292,29 @@ function drawModalStepOne(product_id) {
 
 function drawModalStepTwo(product_id) {
     clearNode(modalBody);
-    var inputPhone = el('input', {class: 'u-full-width', type: 'text', name: 'delivery[phone]', placeholder: '89999999999'});
+    if (!stepTwoForm) {
+        stepTwoForm = document.createDocumentFragment();
+        stepTwoForm.appendChild(el('form',{}, [
+            el('label', {}, 'Ваше имя'),
+            el('input', {class: 'u-full-width', type: 'text', name: 'delivery[name]'}),
+            el('label', {}, 'Телефон'),
+            el('input', {class: 'u-full-width', type: 'text', name: 'delivery[phone]', placeholder: '89999999999'}),
+            el('label', {}, 'Дата'),
+            el('input', {class: 'u-full-width', type: 'text', name: 'delivery[date]'}),
+            el('label', {}, 'Адрес'),
+            el('input', {class: 'u-full-width', type: 'text', name: 'delivery[address]'})
+        ]));
+        
+        stepTwoForm.appendChild(el('div', {class: 'row bottom-right'},[
+            el('button', {class:'button-pay'}, 'Оформить заказ')
+        ]));
+        
+    }
+
+    modalBody.appendChild(stepTwoForm.cloneNode(true));
+    var inputPhone = modalBody.querySelector('input[name="delivery[phone]"]');
     inputPhone.addEventListener('keydown', onKeydownNumberOnly);
-    modalBody.appendChild(el('form',{}, [
-        el('label', {}, 'Ваше имя'),
-        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[name]'}),
-        el('label', {}, 'Телефон'),
-        inputPhone,
-        el('label', {}, 'Дата'),
-        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[date]'}),
-        el('label', {}, 'Адрес'),
-        el('input', {class: 'u-full-width', type: 'text', name: 'delivery[address]'})
-    ]));
-    var buttonPay = el('button', {class:'button-pay'}, 'Оформить заказ');
+    var buttonPay = modalBody.querySelector('button.button-pay');
     buttonPay.addEventListener('click', function(event) {
         orderData = Object.assign(orderData, readInputModal());
         if (validateModalInput()) {
@@ -314,23 +327,29 @@ function drawModalStepTwo(product_id) {
         }
         
     });
-    modalBody.appendChild(el('div', {class: 'row bottom-right'},[
-        buttonPay
-    ]));
 }
 
 function drawModalReview() {
     clearNode(modalBody);
-    modalBody.appendChild(
-        el('form',{}, 
-        [
-            el('label', {}, 'Ваше имя'),
-            el('input', {class: 'u-full-width', type: 'text', name: 'name'}),
-            el('label', {}, 'Ваш отзыв'),
-            el('textarea', {class: 'u-full-width', name: 'text'})
-        ]
-    ));
-    var buttonSend = el('button', {class:'button-pay'}, 'Отправить отзыв');
+    
+    if (!reviewForm) {
+        reviewForm = document.createDocumentFragment();
+        reviewForm.appendChild(el('form',{}, 
+            [
+                el('label', {}, 'Ваше имя'),
+                el('input', {class: 'u-full-width', type: 'text', name: 'name'}),
+                el('label', {}, 'Ваш отзыв'),
+                el('textarea', {class: 'u-full-width', name: 'text'})
+            ]
+        ));
+        
+        reviewForm.appendChild(el('div', {class: 'row bottom-right'}, [
+            el('button', {class:'button-pay'}, 'Отправить отзыв')
+        ]));
+    }
+
+    modalBody.appendChild(reviewForm.cloneNode(true));
+    var buttonSend = modalBody.querySelector('button.button-pay');
     buttonSend.addEventListener('click', function(event) {
         if (!validateModalInput()) {
             showModalMessage('Заполните поля');
@@ -341,9 +360,6 @@ function drawModalReview() {
             sendData(urlReview, reviewData, reviewWork, errorHandler);
         }
     });
-    modalBody.appendChild(el('div', {class: 'row bottom-right'}, [
-        buttonSend
-    ]));
 }
 
 function resize(event) {
